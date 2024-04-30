@@ -16,7 +16,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyJarPage(title: 'Swear Jar'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyJarPage(title: 'Swear Jar'),
+        '/dares': (context) => const DaresPage(title: 'Dares Page'),
+      }
     );
   }
 }
@@ -63,6 +67,47 @@ class _MyJarPageState extends State<MyJarPage> {
         onPressed: _incrementCounter,
         tooltip: 'Add Swear',
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.whatshot),
+            label: 'Dares',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Acts of Kindness',
+          ),
+      ],
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            Navigator.pushNamed(context, '/dares');
+            break;
+          }
+        }
+      )
+    );
+  }
+}
+
+class DaresPage extends StatelessWidget {
+  const DaresPage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title ?? 'Dares Page'),
+      ),
+      body: Center(
+        child: Text('Dares Page Content'),
       ),
     );
   }
