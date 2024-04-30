@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:swear_jar/Models.dart';
 
 class DaresYamlReader {
-  Future<List<Dare>> readQuizzes(String fileName) async {
+  Future<List<Dare>> readDares(String fileName) async {
     String fileContents = await rootBundle.loadString(fileName);
     YamlList data = loadYaml(fileContents);
     List<Dare> daresList = [];
@@ -26,7 +26,7 @@ class DaresYamlReader {
 }
 
 class ActsYamlReader {
-  Future<List<ActOfKindness>> readQuizzes(String fileName) async {
+  Future<List<ActOfKindness>> readActs(String fileName) async {
     String fileContents = await rootBundle.loadString(fileName);
     YamlList data = loadYaml(fileContents);
     List<ActOfKindness> ActsList = [];
