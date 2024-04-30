@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const MyJarPage(title: 'Swear Jar'),
         '/dares': (context) => const DaresPage(title: 'Dares Page'),
         '/stats': (context) => const StatsPage(title: 'Stats Page'),
+        '/actsOfKindness': (context) => const ActsOfKindnessPage(title: 'Acts of Kindness Page'),
       }
     );
   }
@@ -92,6 +93,9 @@ class _MyJarPageState extends State<MyJarPage> {
           case 1:
             Navigator.pushNamed(context, '/stats');
             break;
+          case 2:
+            Navigator.pushNamed(context, '/actsOfKindness');
+            break;
           }
         }
       )
@@ -130,6 +134,24 @@ class StatsPage extends StatelessWidget {
       ),
       body: Center(
         child: Text('Stats Page Content'),
+      ),
+    );
+  }
+}
+
+class ActsOfKindnessPage extends StatelessWidget {
+  const ActsOfKindnessPage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title ?? 'Acts of Kindness Page'), // Use default value if title is null
+      ),
+      body: Center(
+        child: Text('Acts of Kindness Page Content'),
       ),
     );
   }
