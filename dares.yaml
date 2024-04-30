@@ -1,0 +1,21 @@
+dares:
+  - dare: "Wash the dishes for the day"
+    severity: 1
+  - dare: "Do a load of laundry"
+    severity: 1
+  - dare: "Clean the bathroom"
+    severity: 2
+  - dare: "Take out the trash"
+    severity: 1
+  - dare: "Make breakfast for everyone"
+    severity: 2
+  - dare: "Vacuum the living room"
+    severity: 1
+  - dare: "Organize a messy closet"
+    severity: 2
+  - dare: "Water all the plants"
+    severity: 1
+  - dare: "Write an apology letter"
+    severity: 3
+  - dare: "Donate to a charity"
+    severity: 2
