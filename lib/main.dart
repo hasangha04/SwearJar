@@ -10,19 +10,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Swear Jar',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const MyJarPage(title: 'Swear Jar'),
-        '/dares': (context) => const DaresPage(title: 'Dares Page'),
-        '/stats': (context) => const StatsPage(title: 'Stats Page'),
-        '/actsOfKindness': (context) => const ActsOfKindnessPage(title: 'Acts of Kindness Page'),
-      }
+        debugShowCheckedModeBanner: false,
+        title: 'Swear Jar',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const MyJarPage(title: 'Swear Jar'),
+          '/dares': (context) => const DaresPage(title: 'Dares Page'),
+          '/stats': (context) => const StatsPage(title: 'Stats Page'),
+          '/actsOfKindness': (context) => const ActsOfKindnessPage(title: 'Acts of Kindness Page'),
+        }
     );
   }
 }
@@ -48,57 +48,65 @@ class _MyJarPageState extends State<MyJarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title ?? 'Swear Jar'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Push button to add a swear to the jar',
-            ),
-            Text(
-              'Swears in Jar: $_counter',
-            ),
-          ],
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title ?? 'Swear Jar'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add Swear',
-        child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.whatshot),
-            label: 'Dares',
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Push button to add a swear to the jar',
+              ),
+              Text(
+                'Swears in Jar: $_counter',
+              ),
+              const SizedBox(height: 20),
+              const SizedBox(height: 20),
+              Image.asset(
+                'jar.png',
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Stats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Acts of Kindness',
-          ),
-      ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            Navigator.pushNamed(context, '/dares');
-            break;
-          case 1:
-            Navigator.pushNamed(context, '/stats');
-            break;
-          case 2:
-            Navigator.pushNamed(context, '/actsOfKindness');
-            break;
-          }
-        }
-      )
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _incrementCounter,
+          tooltip: 'Add Swear',
+          child: const Icon(Icons.add),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.whatshot),
+                label: 'Dares',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bar_chart),
+                label: 'Stats',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite),
+                label: 'Acts of Kindness',
+              ),
+            ],
+            onTap: (index) {
+              switch (index) {
+                case 0:
+                  Navigator.pushNamed(context, '/dares');
+                  break;
+                case 1:
+                  Navigator.pushNamed(context, '/stats');
+                  break;
+                case 2:
+                  Navigator.pushNamed(context, '/actsOfKindness');
+                  break;
+              }
+            }
+        )
     );
   }
 }
