@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const MyJarPage(title: 'Swear Jar'),
         '/dares': (context) => const DaresPage(title: 'Dares Page'),
+        '/stats': (context) => const StatsPage(title: 'Stats Page'),
       }
     );
   }
@@ -88,6 +89,9 @@ class _MyJarPageState extends State<MyJarPage> {
           case 0:
             Navigator.pushNamed(context, '/dares');
             break;
+          case 1:
+            Navigator.pushNamed(context, '/stats');
+            break;
           }
         }
       )
@@ -108,6 +112,24 @@ class DaresPage extends StatelessWidget {
       ),
       body: Center(
         child: Text('Dares Page Content'),
+      ),
+    );
+  }
+}
+
+class StatsPage extends StatelessWidget {
+  const StatsPage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title ?? 'Stats Page'),
+      ),
+      body: Center(
+        child: Text('Stats Page Content'),
       ),
     );
   }
