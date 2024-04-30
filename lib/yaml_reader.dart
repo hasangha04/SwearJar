@@ -1,7 +1,7 @@
 import 'package:swear_jar/main.dart';
 import 'package:yaml/yaml.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:swear_jar/Models.dart';
+import 'package:swear_jar/models.dart';
 
 class DaresYamlReader {
   Future<List<Dare>> readDares(String fileName) async {
