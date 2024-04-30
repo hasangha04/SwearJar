@@ -156,7 +156,7 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title ?? 'Acts of Kindness Page'), // Use default value if title is null
+        title: Text(title ?? 'Acts of Kindness Page'),
       ),
       body: Center(
         child: Text('Acts of Kindness Page Content'),
