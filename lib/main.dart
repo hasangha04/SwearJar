@@ -143,17 +143,17 @@ class DaresPage extends StatelessWidget {
             return data == null
                 ? {'dare': '', 'severity': 0}
                 : {
-              'dare': data['dare'] ?? '', // Provide a default value
-              'severity': data['severity'] ?? 0, // Provide a default value
+              'dare': data['dare'] ?? '',
+              'severity': data['severity'] ?? 0,
             };
-          }).toList();
+          }).toList().reversed.toList();
 
           return ListView.builder(
             itemCount: dares.length,
             itemBuilder: (context, index) {
               final dare = dares[index];
               return ListTile(
-                title: Text(dare['dare'] ?? ''), // Provide a default value
+                title: Text(dare['dare'] ?? ''),
                 subtitle: Text('Severity: ${dare['severity']}'),
               );
             },
