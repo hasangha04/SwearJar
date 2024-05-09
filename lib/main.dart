@@ -54,7 +54,7 @@ class _MyJarPageState extends State<MyJarPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title ?? 'Swear Jar'),
+          title: Text('Swear Jar'),
         ),
         body: Center(
           child: Column(
@@ -124,7 +124,7 @@ class DaresPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title ?? 'Dares Page'),
+        title: Text('Dares Page'),
       ),
       body: Center(
         child: Text('Dares Page Content'),
@@ -208,7 +208,7 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title ?? 'Stats Page'),
+        title: Text('Stats Page'),
       ),
       body: Center(
         child: Text('Stats Page Content'),
@@ -226,7 +226,7 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title ?? 'Acts of Kindness Page'),
+        title: Text('Acts of Kindness Page'),
       ),
       body: Center(
         child: Text('Acts of Kindness Page Content'),
