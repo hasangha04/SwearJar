@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:swear_jar/firebaseService.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -125,6 +130,72 @@ class DaresPage extends StatelessWidget {
       body: Center(
         child: Text('Dares Page Content'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to a page where users can add a dare
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddDarePage()),
+          );
+        },
+        tooltip: 'Add Dare',
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+// Create a new page for adding dares
+class AddDarePage extends StatefulWidget {
+  @override
+  _AddDarePageState createState() => _AddDarePageState();
+}
+
+class _AddDarePageState extends State<AddDarePage> {
+  String newDareText = ''; // Store the text of the new dare
+  int newDareSeverity = 1; // Store the severity of the new dare, default to 1
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Dare'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                newDareText = value;
+              },
+              decoration: InputDecoration(
+                labelText: 'Enter dare',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                newDareSeverity = int.tryParse(value) ?? 1;
+              },
+              decoration: InputDecoration(
+                labelText: 'Enter severity (1-4)',
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Add the new dare to Firebase
+                FirebaseService.addDare(newDareText, newDareSeverity);
+                // Navigate back to the previous page
+                Navigator.pop(context);
+              },
+              child: Text('Add Dare'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -162,5 +233,17 @@ class ActsOfKindnessPage extends StatelessWidget {
         child: Text('Acts of Kindness Page Content'),
       ),
     );
+  }
+}
+
+// add dare with severity into firebase
+void addDare(String dareText, int severity) async {
+  try {
+    await FirebaseFirestore.instance.collection('dares').add({
+      'text': dareText,
+      'severity': severity,
+    });
+  } catch (e) {
+    print('Error adding dare: $e');
   }
 }
