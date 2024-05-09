@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:swear_jar/firebaseService.dart';
@@ -236,14 +235,3 @@ class ActsOfKindnessPage extends StatelessWidget {
   }
 }
 
-// add dare with severity into firebase
-void addDare(String dareText, int severity) async {
-  try {
-    await FirebaseFirestore.instance.collection('dares').add({
-      'text': dareText,
-      'severity': severity,
-    });
-  } catch (e) {
-    print('Error adding dare: $e');
-  }
-}
