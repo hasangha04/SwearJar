@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:swear_jar/firebaseService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,10 +125,40 @@ class DaresPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dares Page'),
+        title: Text(title),
       ),
-      body: Center(
-        child: Text('Dares Page Content'),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('dares').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final dares = snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>?;
+            return data == null
+                ? {'dare': '', 'severity': 0}
+                : {
+              'dare': data['dare'] ?? '', // Provide a default value
+              'severity': data['severity'] ?? 0, // Provide a default value
+            };
+          }).toList();
+
+          return ListView.builder(
+            itemCount: dares.length,
+            itemBuilder: (context, index) {
+              final dare = dares[index];
+              return ListTile(
+                title: Text(dare['dare'] ?? ''), // Provide a default value
+                subtitle: Text('Severity: ${dare['severity']}'),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

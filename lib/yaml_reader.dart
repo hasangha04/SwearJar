@@ -1,4 +1,3 @@
-import 'package:swear_jar/main.dart';
 import 'package:yaml/yaml.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:swear_jar/models.dart';
