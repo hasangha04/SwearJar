@@ -128,10 +128,7 @@ class DaresPage extends StatelessWidget {
         title: Text(title),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('dares')
-            .orderBy('serverTimestamp', descending: true)
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('dares').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
