@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "887496562203",
+    "project_id": "swear-jar-61683",
+    "storage_bucket": "swear-jar-61683.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887496562203:android:4598788d4ed169c5478abe",
+        "android_client_info": {
+          "package_name": "com.example.swear_jar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_OAsIQeF9RobXc-fuTyXYTnSBcoZR_0U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
