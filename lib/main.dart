@@ -128,7 +128,10 @@ class DaresPage extends StatelessWidget {
         title: Text(title),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dares').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('dares')
+            .orderBy('serverTimestamp', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
@@ -143,17 +146,17 @@ class DaresPage extends StatelessWidget {
             return data == null
                 ? {'dare': '', 'severity': 0}
                 : {
-              'dare': data['dare'] ?? '',
-              'severity': data['severity'] ?? 0,
+              'dare': data['dare'] ?? '', // Provide a default value
+              'severity': data['severity'] ?? 0, // Provide a default value
             };
-          }).toList().reversed.toList();
+          }).toList();
 
           return ListView.builder(
             itemCount: dares.length,
             itemBuilder: (context, index) {
               final dare = dares[index];
               return ListTile(
-                title: Text(dare['dare'] ?? ''),
+                title: Text(dare['dare'] ?? ''), // Provide a default value
                 subtitle: Text('Severity: ${dare['severity']}'),
               );
             },
