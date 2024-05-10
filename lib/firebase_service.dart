@@ -14,4 +14,16 @@ class FirebaseService {
       throw e; // Rethrow the exception to handle it elsewhere if needed
     }
   }
+
+  static Future<void> addAct(String actText, int severity) async {
+    try {
+      await _firestore.collection('acts').add({
+        'act': actText,
+        'severity': severity,
+      });
+    } catch (e) {
+      print('Error adding dare: $e');
+      throw e; // Rethrow the exception to handle it elsewhere if needed
+    }
+  }
 }

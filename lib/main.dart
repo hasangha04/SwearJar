@@ -274,12 +274,109 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Acts of Kindness Page'),
+        title: Text(title),
       ),
-      body: Center(
-        child: Text('Acts of Kindness Page Content'),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('acts').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final acts = snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>?;
+            return data == null
+                ? {'act': '', 'severity': 0}
+                : {
+              'act': data['act'] ?? '',
+              'severity': data['severity'] ?? 0,
+            };
+          }).toList();
+
+          return ListView.builder(
+            itemCount: acts.length,
+            itemBuilder: (context, index) {
+              final act = acts[index];
+              return ListTile(
+                title: Text(act['act'] ?? ''),
+                subtitle: Text('Severity: ${act['severity']}'),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to a page where users can add an act of kindness
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddActPage()),
+          );
+        },
+        tooltip: 'Add Act',
+        child: Icon(Icons.add),
       ),
     );
   }
 }
+
+// Create a new page for adding acts of kindness
+class AddActPage extends StatefulWidget {
+  @override
+  _AddActPageState createState() => _AddActPageState();
+}
+
+class _AddActPageState extends State<AddActPage> {
+  String newActText = ''; // Store the text of the new act
+  int newActSeverity = 1; // Store the severity of the new act, default to 1
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Act'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                newActText = value;
+              },
+              decoration: InputDecoration(
+                labelText: 'Enter act',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                newActSeverity = int.tryParse(value) ?? 1;
+              },
+              decoration: InputDecoration(
+                labelText: 'Enter severity (1-4)',
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Add the new dare to Firebase
+                FirebaseService.addAct(newActText, newActSeverity);
+                // Navigate back to the previous page
+                Navigator.pop(context);
+              },
+              child: Text('Add Act'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
