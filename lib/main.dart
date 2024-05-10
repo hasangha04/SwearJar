@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:swear_jar/firebaseService.dart';
+import 'package:swear_jar/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
@@ -20,6 +20,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            selectedItemColor: Colors.blue, // Color for selected item
+            unselectedItemColor: Colors.blue, // Color for unselected item
+          ),
         ),
         initialRoute: '/',
         routes: {
@@ -43,7 +47,7 @@ class MyJarPage extends StatefulWidget {
 
 class _MyJarPageState extends State<MyJarPage> {
   int _counter = 0;
-
+  int _selectedIndex = 0;
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -84,33 +88,45 @@ class _MyJarPageState extends State<MyJarPage> {
           child: const Icon(Icons.add),
         ),
         bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.whatshot),
-                label: 'Dares',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart),
-                label: 'Stats',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.favorite),
-                label: 'Acts of Kindness',
-              ),
-            ],
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  Navigator.pushNamed(context, '/dares');
-                  break;
-                case 1:
-                  Navigator.pushNamed(context, '/stats');
-                  break;
-                case 2:
-                  Navigator.pushNamed(context, '/actsOfKindness');
-                  break;
-              }
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _selectedIndex, // Add currentIndex property
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.whatshot),
+              label: 'Dares',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Stats',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Acts of Kindness',
+            ),
+          ],
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+            switch (index) {
+              case 0:
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                break;
+              case 1:
+                Navigator.pushNamedAndRemoveUntil(context, '/dares', (route) => false);
+                break;
+              case 2:
+                Navigator.pushNamedAndRemoveUntil(context, '/stats', (route) => false);
+                break;
+              case 3:
+                Navigator.pushNamedAndRemoveUntil(context, '/actsOfKindness', (route) => false);
+                break;
             }
+          },
         )
     );
   }
@@ -171,6 +187,7 @@ class DaresPage extends StatelessWidget {
         tooltip: 'Add Dare',
         child: Icon(Icons.add),
       ),
+
     );
   }
 }
