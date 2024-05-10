@@ -257,10 +257,40 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Acts of Kindness Page'),
+        title: Text(title),
       ),
-      body: Center(
-        child: Text('Acts of Kindness Page Content'),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('acts').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final acts = snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>?;
+            return data == null
+                ? {'act': '', 'severity': 0}
+                : {
+              'act': data['act'] ?? '',
+              'severity': data['severity'] ?? 0,
+            };
+          }).toList();
+
+          return ListView.builder(
+            itemCount: acts.length,
+            itemBuilder: (context, index) {
+              final act = acts[index];
+              return ListTile(
+                title: Text(act['act'] ?? ''),
+                subtitle: Text('Severity: ${act['severity']}'),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
