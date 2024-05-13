@@ -15,27 +15,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Swear Jar',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            selectedItemColor: Colors.blue, // Color for selected item
-            unselectedItemColor: Colors.blue, // Color for unselected item
-          ),
+      debugShowCheckedModeBanner: false,
+      title: 'Swear Jar',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: Colors.blue, // Color for selected item
+          unselectedItemColor: Colors.blue, // Color for unselected item
         ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => const MyJarPage(title: 'Swear Jar'),
-          '/dares': (context) => const DaresPage(title: 'Dares Page'),
-          '/stats': (context) => const StatsPage(title: 'Stats Page'),
-          '/actsOfKindness': (context) => const ActsOfKindnessPage(title: 'Acts of Kindness Page'),
-        }
+      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyJarPage(title: 'Swear Jar'),
+        '/dares': (context) => const DaresPage(title: 'Dares Page'),
+        '/stats': (context) => const StatsPage(title: 'Stats Page'),
+        '/actsOfKindness': (context) =>
+        const ActsOfKindnessPage(title: 'Acts of Kindness Page'),
+      },
     );
   }
 }
 
+// home page, shows swear jar
 class MyJarPage extends StatefulWidget {
   const MyJarPage({Key? key, required this.title}) : super(key: key);
 
@@ -57,81 +59,42 @@ class _MyJarPageState extends State<MyJarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text('Swear Jar'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Push button to add a swear to the jar',
-              ),
-              Text(
-                'Swears in Jar: $_counter',
-              ),
-              const SizedBox(height: 20),
-              const SizedBox(height: 20),
-              Image.asset(
-                'jar.png',
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Add Swear',
-          child: const Icon(Icons.add),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _selectedIndex, // Add currentIndex property
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('Swear Jar'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'Push button to add a swear to the jar',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.whatshot),
-              label: 'Dares',
+            Text(
+              'Swears in Jar: $_counter',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
-              label: 'Stats',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Acts of Kindness',
+            const SizedBox(height: 20),
+            const SizedBox(height: 20),
+            Image.asset(
+              'jar.png',
+              width: 200,
+              height: 200,
+              fit: BoxFit.contain,
             ),
           ],
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-            switch (index) {
-              case 0:
-                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                break;
-              case 1:
-                Navigator.pushNamedAndRemoveUntil(context, '/dares', (route) => false);
-                break;
-              case 2:
-                Navigator.pushNamedAndRemoveUntil(context, '/stats', (route) => false);
-                break;
-              case 3:
-                Navigator.pushNamedAndRemoveUntil(context, '/actsOfKindness', (route) => false);
-                break;
-            }
-          },
-        )
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Add Swear',
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavBar(selectedIndex: _selectedIndex),
     );
   }
 }
 
+// dares page, shows dares
 class DaresPage extends StatelessWidget {
   const DaresPage({Key? key, required this.title}) : super(key: key);
 
@@ -187,12 +150,12 @@ class DaresPage extends StatelessWidget {
         tooltip: 'Add Dare',
         child: Icon(Icons.add),
       ),
-
+      bottomNavigationBar: BottomNavBar(selectedIndex: 1),
     );
   }
 }
 
-// Create a new page for adding dares
+// page to add dares
 class AddDarePage extends StatefulWidget {
   @override
   _AddDarePageState createState() => _AddDarePageState();
@@ -247,6 +210,7 @@ class _AddDarePageState extends State<AddDarePage> {
   }
 }
 
+// stats page
 class StatsPage extends StatelessWidget {
   const StatsPage({Key? key, required this.title}) : super(key: key);
 
@@ -261,10 +225,12 @@ class StatsPage extends StatelessWidget {
       body: Center(
         child: Text('Stats Page Content'),
       ),
+      bottomNavigationBar: BottomNavBar(selectedIndex: 2),
     );
   }
 }
 
+// acts of kindness page
 class ActsOfKindnessPage extends StatelessWidget {
   const ActsOfKindnessPage({Key? key, required this.title}) : super(key: key);
 
@@ -320,11 +286,12 @@ class ActsOfKindnessPage extends StatelessWidget {
         tooltip: 'Add Act',
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: BottomNavBar(selectedIndex: 3),
     );
   }
 }
 
-// Create a new page for adding acts of kindness
+// add an act of kindness
 class AddActPage extends StatefulWidget {
   @override
   _AddActPageState createState() => _AddActPageState();
@@ -379,4 +346,71 @@ class _AddActPageState extends State<AddActPage> {
   }
 }
 
+// bottom nav bar used on each page
+class BottomNavBar extends StatefulWidget {
+  final int selectedIndex;
 
+  const BottomNavBar({Key? key, required this.selectedIndex})
+      : super(key: key);
+
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _selectedIndex, // Add currentIndex property
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.whatshot),
+          label: 'Dares',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.bar_chart),
+          label: 'Stats',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite),
+          label: 'Acts of Kindness',
+        ),
+      ],
+      onTap: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+        switch (index) {
+          case 0:
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            break;
+          case 1:
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/dares', (route) => false);
+            break;
+          case 2:
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/stats', (route) => false);
+            break;
+          case 3:
+            Navigator.pushNamedAndRemoveUntil(context, '/actsOfKindness',
+                    (route) => false);
+            break;
+        }
+      },
+    );
+  }
+}
