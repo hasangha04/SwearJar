@@ -49,15 +49,28 @@ class MyJarPage extends StatefulWidget {
 
 class _MyJarPageState extends State<MyJarPage> {
   int _counter = 0;
+  int _moneyInCents = 0;
   int _selectedIndex = 0;
+
   void _incrementCounter() {
     setState(() {
       _counter++;
+      if (_counter > 30) {
+        _moneyInCents += 25;
+      } else if (_counter > 20) {
+        _moneyInCents += 10;
+      } else if (_counter > 10) {
+        _moneyInCents += 5;
+      } else {
+        _moneyInCents += 1;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    double moneyInDollars = _moneyInCents / 100.0;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -68,12 +81,11 @@ class _MyJarPageState extends State<MyJarPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Push button to add a swear to the jar',
+              'Push button to add money to the swear jar',
             ),
             Text(
-              'Swears in Jar: $_counter',
+              'Money in Jar: \$${moneyInDollars.toStringAsFixed(2)}',
             ),
-            const SizedBox(height: 20),
             const SizedBox(height: 20),
             Image.asset(
               'jar.png',
@@ -93,6 +105,7 @@ class _MyJarPageState extends State<MyJarPage> {
     );
   }
 }
+
 
 // dares page, shows dares
 class DaresPage extends StatelessWidget {
