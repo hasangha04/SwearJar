@@ -20,10 +20,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: Colors.blue, // Color for selected item
-          unselectedItemColor: Colors.blue, // Color for unselected item
-        ),
       ),
       initialRoute: '/',
       routes: {
@@ -383,7 +379,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      currentIndex: _selectedIndex, // Add currentIndex property
+      currentIndex: _selectedIndex,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
@@ -424,6 +420,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
             break;
         }
       },
+      selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey,
     );
   }
 }
