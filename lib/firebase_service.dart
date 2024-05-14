@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class FirebaseService {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -8,6 +10,7 @@ class FirebaseService {
       await _firestore.collection('dares').add({
         'dare': dareText,
         'severity': severity,
+        'userId': FirebaseAuth.instance.currentUser?.uid,
       });
     } catch (e) {
       print('Error adding dare: $e');
@@ -20,6 +23,7 @@ class FirebaseService {
       await _firestore.collection('acts').add({
         'act': actText,
         'severity': severity,
+        'userId': FirebaseAuth.instance.currentUser?.uid,
       });
     } catch (e) {
       print('Error adding dare: $e');

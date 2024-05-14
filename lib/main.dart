@@ -2,10 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:swear_jar/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    user = await signInAnonymously();
+  }
+
+  if (user == null) {
+    print('Failed to sign in anonymously');
+    return;
+  }
+
   runApp(const MyApp());
 }
 
@@ -414,3 +426,22 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
+
+Future<User?> signInAnonymously() async {
+  try {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      print('User is already signed in: ${currentUser.uid}');
+      return currentUser;
+    }
+
+    UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+    return userCredential.user;
+  } catch (e) {
+    print('Failed to sign in anonymously: $e');
+    return null;
+  }
+}
+
+
