@@ -21,6 +21,23 @@ void main() async {
   runApp(const MyApp());
 }
 
+Future<User?> signInAnonymously() async {
+  try {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      print('User is already signed in: ${currentUser.uid}');
+      return currentUser;
+    }
+
+    UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
+    return userCredential.user;
+  } catch (e) {
+    print('Failed to sign in anonymously: $e');
+    return null;
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -60,7 +77,23 @@ class _MyJarPageState extends State<MyJarPage> {
   int _moneyInCents = 0;
   int _selectedIndex = 0;
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await FirebaseService.getUserJarData();
+    if (userData != null) {
+      setState(() {
+        _counter = userData['counter'] ?? 0;
+        _moneyInCents = userData['moneyInCents'] ?? 0;
+      });
+    }
+  }
+
+  void _incrementCounter() async {
     setState(() {
       _counter++;
       if (_counter > 30) {
@@ -73,6 +106,8 @@ class _MyJarPageState extends State<MyJarPage> {
         _moneyInCents += 1;
       }
     });
+
+    await FirebaseService.updateUserJarData(_counter, _moneyInCents);
   }
 
   @override
@@ -114,7 +149,6 @@ class _MyJarPageState extends State<MyJarPage> {
   }
 }
 
-
 // dares page, shows dares
 class DaresPage extends StatelessWidget {
   const DaresPage({Key? key, required this.title}) : super(key: key);
@@ -143,8 +177,8 @@ class DaresPage extends StatelessWidget {
             return data == null
                 ? {'dare': '', 'severity': 0}
                 : {
-              'dare': data['dare'] ?? '', // Provide a default value
-              'severity': data['severity'] ?? 0, // Provide a default value
+              'dare': data['dare'] ?? '',
+              'severity': data['severity'] ?? 0,
             };
           }).toList();
 
@@ -153,7 +187,7 @@ class DaresPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final dare = dares[index];
               return ListTile(
-                title: Text(dare['dare'] ?? ''), // Provide a default value
+                title: Text(dare['dare'] ?? ''),
                 subtitle: Text('Severity: ${dare['severity']}'),
               );
             },
@@ -437,22 +471,3 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
-
-Future<User?> signInAnonymously() async {
-  try {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      print('User is already signed in: ${currentUser.uid}');
-      return currentUser;
-    }
-
-    UserCredential userCredential = await FirebaseAuth.instance.signInAnonymously();
-    return userCredential.user;
-  } catch (e) {
-    print('Failed to sign in anonymously: $e');
-    return null;
-  }
-}
-
-
