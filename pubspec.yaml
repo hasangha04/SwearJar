@@ -33,6 +33,9 @@ dependencies:
   yaml:
   provider:
   firebase_core:
+  mockito:
+  firebase_auth_mocks:
+  cloud_firestore_mocks:
   firebase_auth:
   cloud_firestore: 
   # The following adds the Cupertino Icons font to your application.
@@ -42,6 +45,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito:
+  firebase_auth_mocks:
+  cloud_firestore_mocks:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
