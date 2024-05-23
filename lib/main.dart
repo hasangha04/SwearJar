@@ -9,9 +9,7 @@ void main() async {
   await Firebase.initializeApp();
 
   User? user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    user = await signInAnonymously();
-  }
+  user ??= await signInAnonymously();
 
   if (user == null) {
     print('Failed to sign in anonymously');
@@ -39,7 +37,7 @@ Future<User?> signInAnonymously() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +62,7 @@ class MyApp extends StatelessWidget {
 
 // home page, shows swear jar
 class MyJarPage extends StatefulWidget {
-  const MyJarPage({Key? key, required this.title}) : super(key: key);
+  const MyJarPage({super.key, required this.title});
 
   final String title;
 
@@ -75,7 +73,7 @@ class MyJarPage extends StatefulWidget {
 class _MyJarPageState extends State<MyJarPage> {
   int _counter = 0;
   int _moneyInCents = 0;
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -117,7 +115,7 @@ class _MyJarPageState extends State<MyJarPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Swear Jar'),
+        title: const Text('Swear Jar'),
       ),
       body: Center(
         child: Column(
@@ -151,7 +149,7 @@ class _MyJarPageState extends State<MyJarPage> {
 
 // dares page, shows dares
 class DaresPage extends StatelessWidget {
-  const DaresPage({Key? key, required this.title}) : super(key: key);
+  const DaresPage({super.key, required this.title});
 
   final String title;
 
@@ -199,19 +197,21 @@ class DaresPage extends StatelessWidget {
           // Navigate to a page where users can add a dare
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddDarePage()),
+            MaterialPageRoute(builder: (context) => const AddDarePage()),
           );
         },
         tooltip: 'Add Dare',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavBar(selectedIndex: 1),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
     );
   }
 }
 
 // page to add dares
 class AddDarePage extends StatefulWidget {
+  const AddDarePage({super.key});
+
   @override
   _AddDarePageState createState() => _AddDarePageState();
 }
@@ -224,7 +224,7 @@ class _AddDarePageState extends State<AddDarePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Dare'),
+        title: const Text('Add Dare'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -234,21 +234,21 @@ class _AddDarePageState extends State<AddDarePage> {
               onChanged: (value) {
                 newDareText = value;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter dare',
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 newDareSeverity = int.tryParse(value) ?? 1;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter severity (1-4)',
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Add the new dare to Firebase
@@ -256,7 +256,7 @@ class _AddDarePageState extends State<AddDarePage> {
                 // Navigate back to the previous page
                 Navigator.pop(context);
               },
-              child: Text('Add Dare'),
+              child: const Text('Add Dare'),
             ),
           ],
         ),
@@ -267,7 +267,7 @@ class _AddDarePageState extends State<AddDarePage> {
 
 // stats page
 class StatsPage extends StatelessWidget {
-  const StatsPage({Key? key, required this.title}) : super(key: key);
+  const StatsPage({super.key, required this.title});
 
   final String title;
 
@@ -275,19 +275,19 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stats Page'),
+        title: const Text('Stats Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Stats Page Content'),
       ),
-      bottomNavigationBar: BottomNavBar(selectedIndex: 2),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
     );
   }
 }
 
 // acts of kindness page
 class ActsOfKindnessPage extends StatelessWidget {
-  const ActsOfKindnessPage({Key? key, required this.title}) : super(key: key);
+  const ActsOfKindnessPage({super.key, required this.title});
 
   final String title;
 
@@ -335,19 +335,21 @@ class ActsOfKindnessPage extends StatelessWidget {
           // Navigate to a page where users can add an act of kindness
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddActPage()),
+            MaterialPageRoute(builder: (context) => const AddActPage()),
           );
         },
         tooltip: 'Add Act',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavBar(selectedIndex: 3),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 3),
     );
   }
 }
 
 // add an act of kindness
 class AddActPage extends StatefulWidget {
+  const AddActPage({super.key});
+
   @override
   _AddActPageState createState() => _AddActPageState();
 }
@@ -360,7 +362,7 @@ class _AddActPageState extends State<AddActPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Act'),
+        title: const Text('Add Act'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -370,21 +372,21 @@ class _AddActPageState extends State<AddActPage> {
               onChanged: (value) {
                 newActText = value;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter act',
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 newActSeverity = int.tryParse(value) ?? 1;
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter severity (1-4)',
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Add the new dare to Firebase
@@ -392,7 +394,7 @@ class _AddActPageState extends State<AddActPage> {
                 // Navigate back to the previous page
                 Navigator.pop(context);
               },
-              child: Text('Add Act'),
+              child: const Text('Add Act'),
             ),
           ],
         ),
@@ -405,8 +407,7 @@ class _AddActPageState extends State<AddActPage> {
 class BottomNavBar extends StatefulWidget {
   final int selectedIndex;
 
-  const BottomNavBar({Key? key, required this.selectedIndex})
-      : super(key: key);
+  const BottomNavBar({super.key, required this.selectedIndex});
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();

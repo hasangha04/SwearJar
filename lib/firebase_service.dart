@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseService {
-  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static Future<void> addDare(String dareText, int severity) async {
     try {
@@ -13,7 +13,7 @@ class FirebaseService {
       });
     } catch (e) {
       print('Error adding dare: $e');
-      throw e; // Rethrow the exception to handle it elsewhere if needed
+      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
 
@@ -26,7 +26,7 @@ class FirebaseService {
       });
     } catch (e) {
       print('Error adding act: $e');
-      throw e; // Rethrow the exception to handle it elsewhere if needed
+      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
 
@@ -41,7 +41,7 @@ class FirebaseService {
       }
     } catch (e) {
       print('Error updating jar data: $e');
-      throw e; // Rethrow the exception to handle it elsewhere if needed
+      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
 
@@ -55,7 +55,7 @@ class FirebaseService {
       return null;
     } catch (e) {
       print('Error getting jar data: $e');
-      throw e; // Rethrow the exception to handle it elsewhere if needed
+      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
 }
