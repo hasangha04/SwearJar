@@ -253,6 +253,7 @@ class DaresPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
       body: Padding(
@@ -326,6 +327,7 @@ class _AddDarePageState extends State<AddDarePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Add Dare'),
       ),
       body: Padding(
@@ -406,6 +408,7 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Stats Page'),
       ),
       body: SingleChildScrollView(
@@ -465,6 +468,7 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
       body: Padding(
@@ -538,6 +542,7 @@ class _AddActPageState extends State<AddActPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Add Act'),
       ),
       body: Padding(
