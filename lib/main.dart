@@ -225,15 +225,25 @@ class _MyJarPageState extends State<MyJarPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            FloatingActionButton(
-              onPressed: _showDecrementDialog,
-              tooltip: 'Remove Swear',
-              child: const Icon(Icons.remove),
+            Builder(
+              builder: (context) {
+                return FloatingActionButton(
+                  onPressed: _showDecrementDialog,
+                  tooltip: 'Remove Swear',
+                  child: const Icon(Icons.remove),
+                  heroTag: 'removeButton',
+                );
+              },
             ),
-            FloatingActionButton(
-              onPressed: _incrementCounter,
-              tooltip: 'Add Swear',
-              child: const Icon(Icons.add),
+            Builder(
+              builder: (context) {
+                return FloatingActionButton(
+                  onPressed: _incrementCounter,
+                  tooltip: 'Add Swear',
+                  child: const Icon(Icons.add),
+                  heroTag: 'addButton',
+                );
+              },
             ),
           ],
         ),
