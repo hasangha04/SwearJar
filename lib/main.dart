@@ -108,6 +108,18 @@ class _MyJarPageState extends State<MyJarPage> {
     await FirebaseService.updateUserJarData(_counter, _moneyInCents);
   }
 
+  String _getJarImagePath() {
+    if (_moneyInCents < 10) {
+      return 'jar_1.png';
+    } else if (_moneyInCents < 50) {
+      return 'jar_2.png';
+    } else if (_moneyInCents < 150) {
+      return 'jar_3.png';
+    } else {
+      return 'jar_4.png';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double moneyInDollars = _moneyInCents / 100.0;
@@ -129,7 +141,7 @@ class _MyJarPageState extends State<MyJarPage> {
             ),
             const SizedBox(height: 20),
             Image.asset(
-              'jar.png',
+              _getJarImagePath(),
               width: 200,
               height: 200,
               fit: BoxFit.contain,
