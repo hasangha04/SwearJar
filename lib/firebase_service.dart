@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -57,5 +59,101 @@ class FirebaseService {
       print('Error getting jar data: $e');
       rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
+  }
+
+  static Future<void> updateUserDisplayName(String displayName) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).set({
+        'displayName': displayName,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  static Future<void> initializeUserData(User user) async {
+    DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+    if (!userDoc.exists) {
+      await _firestore.collection('users').doc(user.uid).set({
+        'counter': 0,
+        'moneyInCents': 0,
+        'displayName': user.displayName ?? 'Anonymous',
+      });
+      await createGame();
+    }
+  }
+
+  // Generate a 4-character uppercase game ID
+  static String _generateGameId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    final rand = Random();
+    return String.fromCharCodes(Iterable.generate(4, (_) => chars.codeUnitAt(rand.nextInt(chars.length))));
+  }
+
+  // Check if a game ID already exists
+  static Future<bool> _gameIdExists(String gameId) async {
+    final querySnapshot = await _firestore.collection('games').doc(gameId).get();
+    return querySnapshot.exists;
+  }
+
+  // Create a new game with a unique 4-character uppercase game ID
+  static Future<String> createGame() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String gameId;
+      bool exists;
+      do {
+        gameId = _generateGameId();
+        exists = await _gameIdExists(gameId);
+      } while (exists);
+
+      await _firestore.collection('games').doc(gameId).set({
+        'users': [user.uid],
+        'gameId': gameId, // Add gameId field to the game document
+      });
+
+      // Store the game ID in the user's document
+      await _firestore.collection('users').doc(user.uid).set({
+        'gameId': gameId,
+      }, SetOptions(merge: true));
+
+      return gameId;
+    }
+    throw Exception('User not authenticated');
+  }
+
+  static Future<void> joinGame(String gameId) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentReference gameRef = _firestore.collection('games').doc(gameId);
+      DocumentSnapshot gameDoc = await gameRef.get();
+
+      if (gameDoc.exists) {
+        await gameRef.update({
+          'users': FieldValue.arrayUnion([user.uid]),
+        });
+
+        // Update the user's document with the new game ID
+        await _firestore.collection('users').doc(user.uid).set({
+          'gameId': gameId,
+        }, SetOptions(merge: true));
+      } else {
+        throw Exception('Game not found');
+      }
+    }
+    throw Exception('User not authenticated');
+  }
+
+  static Future<Map<String, dynamic>?> getGameData(String gameId) async {
+    DocumentSnapshot gameDoc = await _firestore.collection('games').doc(gameId).get();
+    return gameDoc.data() as Map<String, dynamic>?;
+  }
+
+  static Future<String?> getUserGameId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+      return userDoc['gameId'] as String?;
+    }
+    return null;
   }
 }
