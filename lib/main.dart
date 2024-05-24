@@ -108,6 +108,80 @@ class _MyJarPageState extends State<MyJarPage> {
     await FirebaseService.updateUserJarData(_counter, _moneyInCents);
   }
 
+  void _decrementCounter() async {
+    setState(() {
+      if (_counter > 0) {
+        _counter--;
+        if (_counter > 30) {
+          _moneyInCents -= 25;
+        } else if (_counter > 20) {
+          _moneyInCents -= 10;
+        } else if (_counter > 10) {
+          _moneyInCents -= 5;
+        } else {
+          _moneyInCents -= 1;
+        }
+      }
+    });
+
+    await FirebaseService.updateUserJarData(_counter, _moneyInCents);
+  }
+
+  void _resetCounter() async {
+    setState(() {
+      _counter = 0;
+      _moneyInCents = 0;
+    });
+
+    await FirebaseService.updateUserJarData(_counter, _moneyInCents);
+  }
+
+  String _getJarImagePath() {
+    if (_moneyInCents < 10) {
+      return 'jar_1.png';
+    } else if (_moneyInCents < 50) {
+      return 'jar_2.png';
+    } else if (_moneyInCents < 150) {
+      return 'jar_3.png';
+    } else {
+      return 'jar_4.png';
+    }
+  }
+
+  void _showDecrementDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Swear'),
+          content: const Text('Would you like to remove one swear or reset the jar?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                _decrementCounter();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Remove 1'),
+            ),
+            TextButton(
+              onPressed: () {
+                _resetCounter();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Reset All'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double moneyInDollars = _moneyInCents / 100.0;
@@ -118,29 +192,51 @@ class _MyJarPageState extends State<MyJarPage> {
         title: const Text('Swear Jar'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Push button to add money to the swear jar',
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Push the add or subtract button to add or remove money from the swear jar',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Money in Jar: \$${moneyInDollars.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Image.asset(
+                _getJarImagePath(),
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FloatingActionButton(
+              onPressed: _showDecrementDialog,
+              tooltip: 'Remove Swear',
+              child: const Icon(Icons.remove),
             ),
-            Text(
-              'Money in Jar: \$${moneyInDollars.toStringAsFixed(2)}',
-            ),
-            const SizedBox(height: 20),
-            Image.asset(
-              'jar.png',
-              width: 200,
-              height: 200,
-              fit: BoxFit.contain,
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Add Swear',
+              child: const Icon(Icons.add),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add Swear',
-        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavBar(selectedIndex: _selectedIndex),
     );
