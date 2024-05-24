@@ -149,7 +149,7 @@ class _MyJarPageState extends State<MyJarPage> {
 
 // dares page, shows dares
 class DaresPage extends StatelessWidget {
-  const DaresPage({super.key, required this.title});
+  const DaresPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -159,38 +159,44 @@ class DaresPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dares').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('dares').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final dares = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>?;
-            return data == null
-                ? {'dare': '', 'severity': 0}
-                : {
-              'dare': data['dare'] ?? '',
-              'severity': data['severity'] ?? 0,
-            };
-          }).toList();
+            final dares = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              return data == null
+                  ? {'dare': '', 'severity': 0}
+                  : {
+                'dare': data['dare'] ?? '',
+                'severity': data['severity'] ?? 0,
+              };
+            }).toList();
 
-          return ListView.builder(
-            itemCount: dares.length,
-            itemBuilder: (context, index) {
-              final dare = dares[index];
-              return ListTile(
-                title: Text(dare['dare'] ?? ''),
-                subtitle: Text('Severity: ${dare['severity']}'),
-              );
-            },
-          );
-        },
+            return ListView.builder(
+              itemCount: dares.length,
+              itemBuilder: (context, index) {
+                final dare = dares[index];
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(dare['dare'] ?? ''),
+                    subtitle: Text('Severity: ${dare['severity']}'),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -265,29 +271,97 @@ class _AddDarePageState extends State<AddDarePage> {
   }
 }
 
-// stats page
-class StatsPage extends StatelessWidget {
-  const StatsPage({super.key, required this.title});
+class StatsPage extends StatefulWidget {
+  const StatsPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+
+  @override
+  _StatsPageState createState() => _StatsPageState();
+}
+
+class _StatsPageState extends State<StatsPage> {
+  late User _user;
+  int _totalSwears = 0;
+  int _totalMoney = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser!;
+    _fetchStats();
+  }
+
+  Future<void> _fetchStats() async {
+    try {
+      final userData = await FirebaseService.getUserJarData();
+      if (userData != null) {
+        setState(() {
+          _totalSwears = userData['counter'] ?? 0;
+          _totalMoney = userData['moneyInCents'] ?? 0;
+        });
+      }
+    } catch (e) {
+      print('Error fetching stats: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stats Page'),
+        title: Text('Stats Page'),
       ),
-      body: const Center(
-        child: Text('Stats Page Content'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max, // Adjust this line
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Name: ${_user.displayName}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Total Swears: $_totalSwears',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Total Money: \$${(_totalMoney / 100).toStringAsFixed(2)}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
-      bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
+      bottomNavigationBar: BottomNavBar(selectedIndex: 2),
     );
   }
 }
 
 // acts of kindness page
 class ActsOfKindnessPage extends StatelessWidget {
-  const ActsOfKindnessPage({super.key, required this.title});
+  const ActsOfKindnessPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -297,38 +371,44 @@ class ActsOfKindnessPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('acts').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('acts').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final acts = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>?;
-            return data == null
-                ? {'act': '', 'severity': 0}
-                : {
-              'act': data['act'] ?? '',
-              'severity': data['severity'] ?? 0,
-            };
-          }).toList();
+            final acts = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              return data == null
+                  ? {'act': '', 'severity': 0}
+                  : {
+                'act': data['act'] ?? '',
+                'severity': data['severity'] ?? 0,
+              };
+            }).toList();
 
-          return ListView.builder(
-            itemCount: acts.length,
-            itemBuilder: (context, index) {
-              final act = acts[index];
-              return ListTile(
-                title: Text(act['act'] ?? ''),
-                subtitle: Text('Severity: ${act['severity']}'),
-              );
-            },
-          );
-        },
+            return ListView.builder(
+              itemCount: acts.length,
+              itemBuilder: (context, index) {
+                final act = acts[index];
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(act['act'] ?? ''),
+                    subtitle: Text('Severity: ${act['severity']}'),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -472,3 +552,4 @@ class _BottomNavBarState extends State<BottomNavBar> {
     );
   }
 }
+

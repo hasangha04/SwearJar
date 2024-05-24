@@ -58,4 +58,14 @@ class FirebaseService {
       rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
+
+  static Future<Map<String, dynamic>?> getUserJarDataForUser(String userId) async {
+    try {
+      final docSnapshot = await _firestore.collection('users').doc(userId).get();
+      return docSnapshot.data();
+    } catch (e) {
+      print('Error getting jar data for user: $e');
+      rethrow; // Rethrow the exception to handle it elsewhere if needed
+    }
+  }
 }
