@@ -41,7 +41,6 @@ Future<User?> signInAnonymously() async {
   }
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -122,6 +121,34 @@ class _MyJarPageState extends State<MyJarPage> {
     await FirebaseService.updateUserJarData(_counter, _moneyInCents);
   }
 
+  void _decrementCounter() async {
+    setState(() {
+      if (_counter > 0) {
+        _counter--;
+        if (_counter > 30) {
+          _moneyInCents -= 25;
+        } else if (_counter > 20) {
+          _moneyInCents -= 10;
+        } else if (_counter > 10) {
+          _moneyInCents -= 5;
+        } else {
+          _moneyInCents -= 1;
+        }
+      }
+    });
+
+    await FirebaseService.updateUserJarData(_counter, _moneyInCents);
+  }
+
+  void _resetCounter() async {
+    setState(() {
+      _counter = 0;
+      _moneyInCents = 0;
+    });
+
+    await FirebaseService.updateUserJarData(_counter, _moneyInCents);
+  }
+
   String _getJarImagePath() {
     if (_moneyInCents < 10) {
       return 'jar_1.png';
@@ -132,6 +159,40 @@ class _MyJarPageState extends State<MyJarPage> {
     } else {
       return 'jar_4.png';
     }
+  }
+
+  void _showDecrementDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Swear'),
+          content: const Text('Would you like to remove one swear or reset the jar?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                _decrementCounter();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Remove 1'),
+            ),
+            TextButton(
+              onPressed: () {
+                _resetCounter();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Reset All'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _showDisplayNameDialog() async {
@@ -265,29 +326,61 @@ class _MyJarPageState extends State<MyJarPage> {
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Push button to add money to the swear jar',
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Push the add or subtract button to add or remove money from the swear jar',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Money in Jar: \$${moneyInDollars.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Image.asset(
+                _getJarImagePath(),
+                width: 200,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Builder(
+              builder: (context) {
+                return FloatingActionButton(
+                  onPressed: _showDecrementDialog,
+                  tooltip: 'Remove Swear',
+                  child: const Icon(Icons.remove),
+                  heroTag: 'removeButton',
+                );
+              },
             ),
-            Text(
-              'Money in Jar: \$${moneyInDollars.toStringAsFixed(2)}',
-            ),
-            const SizedBox(height: 20),
-            Image.asset(
-              _getJarImagePath(),
-              width: 200,
-              height: 200,
-              fit: BoxFit.contain,
+            Builder(
+              builder: (context) {
+                return FloatingActionButton(
+                  onPressed: _incrementCounter,
+                  tooltip: 'Add Swear',
+                  child: const Icon(Icons.add),
+                  heroTag: 'addButton',
+                );
+              },
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add Swear',
-        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavBar(selectedIndex: _selectedIndex),
     );
@@ -296,7 +389,7 @@ class _MyJarPageState extends State<MyJarPage> {
 
 // dares page, shows dares
 class DaresPage extends StatelessWidget {
-  const DaresPage({super.key, required this.title});
+  const DaresPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -304,40 +397,47 @@ class DaresPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dares').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('dares').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final dares = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>?;
-            return data == null
-                ? {'dare': '', 'severity': 0}
-                : {
-              'dare': data['dare'] ?? '',
-              'severity': data['severity'] ?? 0,
-            };
-          }).toList();
+            final dares = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              return data == null
+                  ? {'dare': '', 'severity': 0}
+                  : {
+                'dare': data['dare'] ?? '',
+                'severity': data['severity'] ?? 0,
+              };
+            }).toList();
 
-          return ListView.builder(
-            itemCount: dares.length,
-            itemBuilder: (context, index) {
-              final dare = dares[index];
-              return ListTile(
-                title: Text(dare['dare'] ?? ''),
-                subtitle: Text('Severity: ${dare['severity']}'),
-              );
-            },
-          );
-        },
+            return ListView.builder(
+              itemCount: dares.length,
+              itemBuilder: (context, index) {
+                final dare = dares[index];
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(dare['dare'] ?? ''),
+                    subtitle: Text('Severity: ${dare['severity']}'),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -371,6 +471,7 @@ class _AddDarePageState extends State<AddDarePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Add Dare'),
       ),
       body: Padding(
@@ -412,29 +513,98 @@ class _AddDarePageState extends State<AddDarePage> {
   }
 }
 
-// stats page
-class StatsPage extends StatelessWidget {
-  const StatsPage({super.key, required this.title});
+class StatsPage extends StatefulWidget {
+  const StatsPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+
+  @override
+  _StatsPageState createState() => _StatsPageState();
+}
+
+class _StatsPageState extends State<StatsPage> {
+  late User _user;
+  int _totalSwears = 0;
+  int _totalMoney = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser!;
+    _fetchStats();
+  }
+
+  Future<void> _fetchStats() async {
+    try {
+      final userData = await FirebaseService.getUserJarData();
+      if (userData != null) {
+        setState(() {
+          _totalSwears = userData['counter'] ?? 0;
+          _totalMoney = userData['moneyInCents'] ?? 0;
+        });
+      }
+    } catch (e) {
+      print('Error fetching stats: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stats Page'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text('Stats Page'),
       ),
-      body: const Center(
-        child: Text('Stats Page Content'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max, // Adjust this line
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Name: ${_user.displayName}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Total Swears: $_totalSwears',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Total Money: \$${(_totalMoney / 100).toStringAsFixed(2)}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
-      bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
+      bottomNavigationBar: BottomNavBar(selectedIndex: 2),
     );
   }
 }
 
 // acts of kindness page
 class ActsOfKindnessPage extends StatelessWidget {
-  const ActsOfKindnessPage({super.key, required this.title});
+  const ActsOfKindnessPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -442,40 +612,47 @@ class ActsOfKindnessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('acts').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('acts').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final acts = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>?;
-            return data == null
-                ? {'act': '', 'severity': 0}
-                : {
-              'act': data['act'] ?? '',
-              'severity': data['severity'] ?? 0,
-            };
-          }).toList();
+            final acts = snapshot.data!.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              return data == null
+                  ? {'act': '', 'severity': 0}
+                  : {
+                'act': data['act'] ?? '',
+                'severity': data['severity'] ?? 0,
+              };
+            }).toList();
 
-          return ListView.builder(
-            itemCount: acts.length,
-            itemBuilder: (context, index) {
-              final act = acts[index];
-              return ListTile(
-                title: Text(act['act'] ?? ''),
-                subtitle: Text('Severity: ${act['severity']}'),
-              );
-            },
-          );
-        },
+            return ListView.builder(
+              itemCount: acts.length,
+              itemBuilder: (context, index) {
+                final act = acts[index];
+                return Card(
+                  elevation: 4,
+                  child: ListTile(
+                    title: Text(act['act'] ?? ''),
+                    subtitle: Text('Severity: ${act['severity']}'),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -509,6 +686,7 @@ class _AddActPageState extends State<AddActPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Add Act'),
       ),
       body: Padding(
