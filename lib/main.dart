@@ -523,14 +523,13 @@ class StatsPage extends StatefulWidget {
 }
 
 class _StatsPageState extends State<StatsPage> {
-  late User _user;
   int _totalSwears = 0;
   int _totalMoney = 0;
+  String _displayName = '';
 
   @override
   void initState() {
     super.initState();
-    _user = FirebaseAuth.instance.currentUser!;
     _fetchStats();
   }
 
@@ -539,6 +538,7 @@ class _StatsPageState extends State<StatsPage> {
       final userData = await FirebaseService.getUserJarData();
       if (userData != null) {
         setState(() {
+          _displayName = userData['displayName'] ?? 'Anonymous';
           _totalSwears = userData['counter'] ?? 0;
           _totalMoney = userData['moneyInCents'] ?? 0;
         });
@@ -553,7 +553,7 @@ class _StatsPageState extends State<StatsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Stats Page'),
+        title: Text(widget.title),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -562,7 +562,7 @@ class _StatsPageState extends State<StatsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisSize: MainAxisSize.max, // Adjust this line
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                     child: Card(
@@ -573,7 +573,7 @@ class _StatsPageState extends State<StatsPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Name: ${_user.displayName}',
+                              'Name: $_displayName',
                               style: TextStyle(fontSize: 16),
                             ),
                             SizedBox(height: 8),
