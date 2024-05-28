@@ -72,6 +72,29 @@ class FirebaseService {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> getUsersJarData(String gameId) async {
+    try {
+      List<Map<String, dynamic>> usersData = [];
+      // Query the users collection where gameId matches
+      QuerySnapshot querySnapshot = await _firestore.collection('users').where('gameId', isEqualTo: gameId).get();
+
+      // Iterate over the documents and extract jar data for each user
+      querySnapshot.docs.forEach((userDoc) {
+        Map<String, dynamic> userData = {
+          'displayName': userDoc['displayName'] ?? 'Anonymous',
+          'counter': userDoc['counter'] ?? 0,
+          'moneyInCents': userDoc['moneyInCents'] ?? 0,
+        };
+        usersData.add(userData);
+      });
+
+      return usersData;
+    } catch (e) {
+      print('Error getting users jar data: $e');
+      throw e;
+    }
+  }
+
   static Future<void> updateUserDisplayName(String displayName) async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {

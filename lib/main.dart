@@ -553,9 +553,7 @@ class StatsPage extends StatefulWidget {
 }
 
 class _StatsPageState extends State<StatsPage> {
-  int _totalSwears = 0;
-  int _totalMoney = 0;
-  String _displayName = '';
+  List<Map<String, dynamic>> _usersData = [];
 
   @override
   void initState() {
@@ -565,19 +563,17 @@ class _StatsPageState extends State<StatsPage> {
 
   Future<void> _fetchStats() async {
     try {
-      final userData = await FirebaseService.getUserJarData();
-      if (userData != null) {
+      final gameId = await FirebaseService.getUserGameId();
+      if (gameId != null) {
+        final usersData = await FirebaseService.getUsersJarData(gameId);
         setState(() {
-          _displayName = userData['displayName'] ?? 'Anonymous';
-          _totalSwears = userData['counter'] ?? 0;
-          _totalMoney = userData['moneyInCents'] ?? 0;
+          _usersData = usersData;
         });
       }
     } catch (e) {
       print('Error fetching stats: $e');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -589,41 +585,37 @@ class _StatsPageState extends State<StatsPage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: Card(
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Name: $_displayName',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Total Swears: $_totalSwears',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Total Money: \$${(_totalMoney / 100).toStringAsFixed(2)}',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: _usersData.map((userData) {
+              final displayName = userData['displayName'] ?? 'Anonymous';
+              final totalSwears = userData['counter'] ?? 0;
+              final totalMoney = userData['moneyInCents'] ?? 0;
+              return Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Name: $displayName',
+                        style: TextStyle(fontSize: 16),
                       ),
-                    ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total Swears: $totalSwears',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total Money: \$${(totalMoney / 100).toStringAsFixed(2)}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              );
+            }).toList(),
           ),
         ),
       ),
