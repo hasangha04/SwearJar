@@ -5,10 +5,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:swear_jar/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  await _initNotifications();
 
   User? user = FirebaseAuth.instance.currentUser;
   user ??= await signInAnonymously();
@@ -19,6 +25,42 @@ void main() async {
   }
 
   runApp(const MyApp());
+}
+
+Future<void> _initNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await _scheduleDailyNotification();
+}
+
+Future<void> _scheduleDailyNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  AndroidNotificationDetails(
+    'daily_reminder_channel',
+    'Daily Reminders',
+    channelDescription: 'Channel for daily reminders',
+    importance: Importance.max,
+    priority: Priority.high,
+    showWhen: false,
+  );
+
+  const NotificationDetails platformChannelSpecifics =
+  NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.periodicallyShow(
+    0,
+    'Swear Jar Reminder',
+    'Have you swore today?',
+    RepeatInterval.daily,
+    platformChannelSpecifics,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  );
 }
 
 Future<User?> signInAnonymously() async {
