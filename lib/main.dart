@@ -390,43 +390,69 @@ class DaresPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('dares')
-              .where('gameId', isEqualTo: FirebaseService.getUserGameId())
-              .snapshots(),
+        child: FutureBuilder<String?>(
+          future: FirebaseService.getUserGameId(), // Get user's game ID
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            if (!snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            }
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final gameId = snapshot.data; // User's game ID
+              if (gameId != null) {
+                // User's game ID is available, fetch dares with the gameId
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('dares')
+                      .where('gameId', isEqualTo: gameId)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
 
-            final dares = snapshot.data!.docs.map((doc) {
-              final data = doc.data() as Map<String, dynamic>?;
-              return data == null
-                  ? {'dare': '', 'severity': 0}
-                  : {
-                'dare': data['dare'] ?? '',
-                'severity': data['severity'] ?? 0,
-              };
-            }).toList();
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-            return ListView.builder(
-              itemCount: dares.length,
-              itemBuilder: (context, index) {
-                final dare = dares[index];
-                return Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text(dare['dare'] ?? ''),
-                    subtitle: Text('Severity: ${dare['severity']}'),
-                  ),
+                    final dares = snapshot.data!.docs.map((doc) {
+                      final data = doc.data() as Map<String, dynamic>?;
+                      return data == null
+                          ? {'dare': '', 'severity': 0, 'userId': ''}
+                          : {
+                        'dare': data['dare'] ?? '',
+                        'severity': data['severity'] ?? 0,
+                        'displayName': data['displayName'] ?? '',
+                      };
+                    }).toList();
+
+                    return ListView.builder(
+                      itemCount: dares.length,
+                      itemBuilder: (context, index) {
+                        final dare = dares[index];
+                        return Card(
+                          elevation: 4,
+                          child: ListTile(
+                            title: Text(dare['dare'] ?? ''),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Severity: ${dare['severity']}'),
+                                SizedBox(height: 4),
+                                Text('Display Name: ${dare['displayName']}'),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
-              },
-            );
+              } else {
+                // Handle the case where user's game ID is null
+                return Center(child: Text('Game ID not found.'));
+              }
+            }
           },
         ),
       ),
@@ -445,6 +471,7 @@ class DaresPage extends StatelessWidget {
     );
   }
 }
+
 
 // page to add dares
 class AddDarePage extends StatefulWidget {
@@ -608,40 +635,69 @@ class ActsOfKindnessPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('acts').snapshots(),
+        child: FutureBuilder<String?>(
+          future: FirebaseService.getUserGameId(), // Get user's game ID
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            if (!snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            }
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final gameId = snapshot.data; // User's game ID
+              if (gameId != null) {
+                // User's game ID is available, fetch acts with the gameId
+                return StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('acts')
+                      .where('gameId', isEqualTo: gameId)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
 
-            final acts = snapshot.data!.docs.map((doc) {
-              final data = doc.data() as Map<String, dynamic>?;
-              return data == null
-                  ? {'act': '', 'severity': 0}
-                  : {
-                'act': data['act'] ?? '',
-                'severity': data['severity'] ?? 0,
-              };
-            }).toList();
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-            return ListView.builder(
-              itemCount: acts.length,
-              itemBuilder: (context, index) {
-                final act = acts[index];
-                return Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text(act['act'] ?? ''),
-                    subtitle: Text('Severity: ${act['severity']}'),
-                  ),
+                    final acts = snapshot.data!.docs.map((doc) {
+                      final data = doc.data() as Map<String, dynamic>?;
+                      return data == null
+                          ? {'act': '', 'severity': 0, 'userId': ''}
+                          : {
+                        'act': data['act'] ?? '',
+                        'severity': data['severity'] ?? 0,
+                        'displayName': data['displayName'] ?? '',
+                      };
+                    }).toList();
+
+                    return ListView.builder(
+                      itemCount: acts.length,
+                      itemBuilder: (context, index) {
+                        final act = acts[index];
+                        return Card(
+                          elevation: 4,
+                          child: ListTile(
+                            title: Text(act['act'] ?? ''),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Severity: ${act['severity']}'),
+                                SizedBox(height: 4),
+                                Text('Display Name: ${act['displayName']}'),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
-              },
-            );
+              } else {
+                // Handle the case where user's game ID is null
+                return Center(child: Text('Game ID not found.'));
+              }
+            }
           },
         ),
       ),
