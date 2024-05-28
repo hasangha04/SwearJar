@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:swear_jar/firebase_service.dart';
@@ -80,12 +82,20 @@ class _MyJarPageState extends State<MyJarPage> {
   int _counter = 0;
   int _moneyInCents = 0;
   final int _selectedIndex = 0;
+  late StreamController<String?> _gameIdStreamController;
   String? _gameId;
 
   @override
   void initState() {
     super.initState();
     _initializeUserData();
+    _gameIdStreamController = StreamController<String?>();
+  }
+
+  @override
+  void dispose() {
+    _gameIdStreamController.close();
+    super.dispose();
   }
 
   Future<void> _initializeUserData() async {
@@ -101,6 +111,7 @@ class _MyJarPageState extends State<MyJarPage> {
     String? gameId = await FirebaseService.getUserGameId();
     setState(() {
       _gameId = gameId;
+      _gameIdStreamController.add(gameId);
     });
 
     if (gameId == null) {
@@ -267,6 +278,10 @@ class _MyJarPageState extends State<MyJarPage> {
                   try {
                     await FirebaseService.joinGame(gameId);
                     print('Joined game with ID: $gameId');
+                    setState(() {
+                      _gameId = gameId;
+                      _gameIdStreamController.add(gameId);
+                    });
                   } catch (e) {
                     print('Failed to join game: $e');
                   }
@@ -280,6 +295,7 @@ class _MyJarPageState extends State<MyJarPage> {
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
