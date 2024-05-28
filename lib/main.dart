@@ -70,7 +70,7 @@ Future<void> _scheduleDailyNotification() async {
     'Have you swore today?',
     RepeatInterval.daily,
     platformChannelSpecifics,
-    androidAllowWhileIdle: true,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
   );
 }
 
@@ -641,7 +641,7 @@ class _StatsPageState extends State<StatsPage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch, // Change here
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: _usersData.map((userData) {
               final displayName = userData['displayName'] ?? 'Anonymous';
               final totalSwears = userData['counter'] ?? 0;
