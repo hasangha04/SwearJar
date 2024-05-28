@@ -239,7 +239,6 @@ class _MyJarPageState extends State<MyJarPage> {
 
   Future<void> _showJoinGameDialog() async {
     String gameId = '';
-    String? currentGameId = await FirebaseService.getUserGameId();
 
     return showDialog<void>(
       context: context,
@@ -252,7 +251,7 @@ class _MyJarPageState extends State<MyJarPage> {
             },
             decoration: InputDecoration(
               labelText: 'Game ID',
-              hintText: currentGameId ?? 'Enter a Game ID to join',
+              hintText: 'Enter a Game ID to join',
             ),
           ),
           actions: <Widget>[
@@ -286,30 +285,33 @@ class _MyJarPageState extends State<MyJarPage> {
   Widget build(BuildContext context) {
     double moneyInDollars = _moneyInCents / 100.0;
 
-    void _showSnackBar(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Swear Jar'),
-        flexibleSpace: FlexibleSpaceBar(
-          title: Text(
-            _gameId != null ? 'Game ID: $_gameId' : '',
-            style: TextStyle(fontSize: 16),
-          ),
-          centerTitle: true,
-        ),
         actions: <Widget>[
-          TextButton(
-            onPressed: _showSetNameDialog,
-            child: Text('Join Game'),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton(
+              onPressed: _showSetNameDialog,
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: Colors.blue),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
+                child: Text(
+                  'Join Game',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -321,7 +323,7 @@ class _MyJarPageState extends State<MyJarPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               const Text(
-                'Push the add or subtract button to add or remove money from the swear jar',
+                "Use buttons below to adjust money in swear jar",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),
@@ -331,11 +333,21 @@ class _MyJarPageState extends State<MyJarPage> {
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              Image.asset(
-                _getJarImagePath(),
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    _getJarImagePath(),
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    _gameId != null ? 'Game ID: $_gameId' : '',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
               ),
             ],
           ),
@@ -501,6 +513,7 @@ class _AddDarePageState extends State<AddDarePage> {
   }
 }
 
+// page to view stats
 class StatsPage extends StatefulWidget {
   const StatsPage({Key? key, required this.title}) : super(key: key);
 
