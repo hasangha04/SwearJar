@@ -80,6 +80,7 @@ class _MyJarPageState extends State<MyJarPage> {
   int _counter = 0;
   int _moneyInCents = 0;
   final int _selectedIndex = 0;
+  String? _gameId;
 
   @override
   void initState() {
@@ -98,6 +99,10 @@ class _MyJarPageState extends State<MyJarPage> {
 
     // Check if user already has a game ID
     String? gameId = await FirebaseService.getUserGameId();
+    setState(() {
+      _gameId = gameId;
+    });
+
     if (gameId == null) {
       // Create a new game if no game ID exists
       await FirebaseService.createGame();
@@ -195,41 +200,36 @@ class _MyJarPageState extends State<MyJarPage> {
     );
   }
 
-  Future<void> _showDisplayNameDialog() async {
+  Future<void> _showSetNameDialog() async {
     String displayName = '';
-    String? gameId = await FirebaseService.getUserGameId(); // Get the game ID
 
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Set Display Name'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Game ID: $gameId'), // Show game ID below the title
-              TextField(
-                onChanged: (value) {
-                  displayName = value;
-                },
-                decoration: InputDecoration(labelText: 'Display Name'),
-              ),
-            ],
+          content: TextField(
+            onChanged: (value) {
+              displayName = value;
+            },
+            decoration: InputDecoration(labelText: 'Display Name'),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: const Text('Cancel'),
             ),
             TextButton(
-              child: const Text('Save'),
               onPressed: () async {
-                await FirebaseService.updateUserDisplayName(displayName);
-                Navigator.of(context).pop();
+                if (displayName.isNotEmpty) {
+                  await FirebaseService.updateUserDisplayName(displayName);
+                  Navigator.of(context).pop();
+                  _showJoinGameDialog(); // Show the next dialog for joining a game
+                }
               },
+              child: const Text('Save'),
             ),
           ],
         );
@@ -237,37 +237,44 @@ class _MyJarPageState extends State<MyJarPage> {
     );
   }
 
-  Future<void> _joinGameDialog() async {
+  Future<void> _showJoinGameDialog() async {
     String gameId = '';
+    String? currentGameId = await FirebaseService.getUserGameId();
+
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Join Game'),
+          title: Text('Join Game'),
           content: TextField(
             onChanged: (value) {
               gameId = value;
             },
-            decoration: const InputDecoration(labelText: 'Game ID'),
+            decoration: InputDecoration(
+              labelText: 'Game ID',
+              hintText: currentGameId ?? 'Enter a Game ID to join',
+            ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              child: const Text('Cancel'),
             ),
             TextButton(
-              child: const Text('Join'),
               onPressed: () async {
-                try {
-                  await FirebaseService.joinGame(gameId);
-                  Navigator.of(context).pop();
-                  print('Joined game with ID: $gameId');
-                } catch (e) {
-                  print('Failed to join game: $e');
+                if (gameId.isNotEmpty) {
+                  try {
+                    await FirebaseService.joinGame(gameId);
+                    print('Joined game with ID: $gameId');
+                  } catch (e) {
+                    print('Failed to join game: $e');
+                  }
                 }
+                Navigator.of(context).pop();
               },
+              child: const Text('Join'),
             ),
           ],
         );
@@ -288,40 +295,21 @@ class _MyJarPageState extends State<MyJarPage> {
       );
     }
 
-    void _createNewGame() async {
-      try {
-        String? gameId = await FirebaseService.getUserGameId();
-
-        if (gameId != null) {
-          // User is already in a game
-          _showSnackBar('You are already in a game with ID: $gameId');
-          return;
-        }
-
-        gameId = await FirebaseService.createGame();
-        _showSnackBar('Created new game with ID: $gameId');
-      } catch (e) {
-        _showSnackBar('Failed to create new game: $e');
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Swear Jar'),
+        flexibleSpace: FlexibleSpaceBar(
+          title: Text(
+            _gameId != null ? 'Game ID: $_gameId' : '',
+            style: TextStyle(fontSize: 16),
+          ),
+          centerTitle: true,
+        ),
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: _showDisplayNameDialog,
-          ),
-          IconButton(
-            icon: const Icon(Icons.group),
-            onPressed: _joinGameDialog,
-          ),
-          IconButton( // Add a new button for creating a game
-            icon: const Icon(Icons.add_circle),
-            onPressed: _createNewGame,
-            tooltip: 'Create New Game',
+          TextButton(
+            onPressed: _showSetNameDialog,
+            child: Text('Join Game'),
           ),
         ],
       ),
