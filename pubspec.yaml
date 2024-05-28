@@ -40,6 +40,8 @@ dependencies:
   firebase_messaging: 14.9.3
   flutter_local_notifications: 17.1.2
   timezone: 0.9.3
+  permission_handler: ^10.0.0
+
 
 dev_dependencies:
   flutter_test:
