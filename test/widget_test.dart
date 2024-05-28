@@ -1,53 +1,103 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swear_jar/main.dart';
+import 'package:swear_jar/main.dart'; // Adjust the import based on the actual path of your main.dart file
 
 void main() {
-  setUpAll(() async {
-    await Firebase.initializeApp();
-  });
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('MyJarPage displays initial data', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+  group('Widget Tests', () {
+    testWidgets('MyApp initializes and displays MyJarPage', (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle();
 
-    expect(find.text('Push button to add money to the swear jar'), findsOneWidget);
-    expect(find.text('Money in Jar: \$0.00'), findsOneWidget);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
-  });
+      expect(find.text('Swear Jar'), findsOneWidget);
+    });
 
-  testWidgets('Increment counter and update money in jar', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    testWidgets('MyJarPage increments and decrements counter', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyJarPage(title: 'Swear Jar')));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Money in Jar: \$0.00'), findsOneWidget);
+      // Verify initial counter value
+      expect(find.text('Money in Jar: \$0.00'), findsOneWidget);
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pump();
+      // Tap the increment button
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
 
-    expect(find.text('Money in Jar: \$0.01'), findsOneWidget);
-  });
+      // Verify incremented counter value
+      expect(find.text('Money in Jar: \$0.01'), findsOneWidget);
 
-  testWidgets('BottomNavBar navigation works correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+      // Tap the decrement button
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
 
-    await tester.tap(find.text('Dares'));
-    await tester.pumpAndSettle();
+      // Verify decremented counter value
+      expect(find.text('Money in Jar: \$0.00'), findsOneWidget);
+    });
 
-    expect(find.text('Dares Page'), findsOneWidget);
+    testWidgets('Navigation to DaresPage', (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Stats'));
-    await tester.pumpAndSettle();
+      // Tap the bottom navigation bar item for Dares
+      await tester.tap(find.text('Dares'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Stats Page'), findsOneWidget);
+      // Verify we are on the DaresPage
+      expect(find.text('Dares Page'), findsOneWidget);
+    });
 
-    await tester.tap(find.text('Acts of Kindness'));
-    await tester.pumpAndSettle();
+    testWidgets('Navigation to StatsPage', (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle();
 
-    expect(find.text('Acts of Kindness Page'), findsOneWidget);
+      // Tap the bottom navigation bar item for Stats
+      await tester.tap(find.text('Stats'));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Home'));
-    await tester.pumpAndSettle();
+      // Verify we are on the StatsPage
+      expect(find.text('Stats Page'), findsOneWidget);
+    });
 
-    expect(find.text('Push button to add money to the swear jar'), findsOneWidget);
+    testWidgets('Navigation to ActsOfKindnessPage', (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle();
+
+      // Tap the bottom navigation bar item for Acts of Kindness
+      await tester.tap(find.text('Acts of Kindness'));
+      await tester.pumpAndSettle();
+
+      // Verify we are on the ActsOfKindnessPage
+      expect(find.text('Acts of Kindness Page'), findsOneWidget);
+    });
+
+    testWidgets('Shows set name dialog on Join Game button tap', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyJarPage(title: 'Swear Jar')));
+      await tester.pumpAndSettle();
+
+      // Tap the Join Game button
+      await tester.tap(find.text('Join Game'));
+      await tester.pumpAndSettle();
+
+      // Verify the dialog is shown
+      expect(find.text('Set Display Name'), findsOneWidget);
+    });
+
+    testWidgets('Shows join game dialog after setting name', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(home: MyJarPage(title: 'Swear Jar')));
+      await tester.pumpAndSettle();
+
+      // Tap the Join Game button
+      await tester.tap(find.text('Join Game'));
+      await tester.pumpAndSettle();
+
+      // Enter a display name and save
+      await tester.enterText(find.byType(TextField).first, 'TestUser');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      // Verify the join game dialog is shown
+      expect(find.text('Join Game'), findsOneWidget);
+    });
   });
 }
