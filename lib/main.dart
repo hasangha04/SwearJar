@@ -403,7 +403,10 @@ class DaresPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('dares').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('dares')
+              .where('gameId', isEqualTo: FirebaseService.getUserGameId())
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');

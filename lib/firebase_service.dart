@@ -6,30 +6,41 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static Future<void> addDare(String dareText, int severity) async {
-    try {
+  static Future<void> addDare(String dare, int severity) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Get the user's display name and gameId
+      String displayName = await getUserDisplayName(user.uid);
+      String? gameId = await getUserGameId();
+
       await _firestore.collection('dares').add({
-        'dare': dareText,
+        'dare': dare,
         'severity': severity,
-        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'displayName': displayName,
+        'gameId': gameId,
       });
-    } catch (e) {
-      print('Error adding dare: $e');
-      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
   }
 
-  static Future<void> addAct(String actText, int severity) async {
-    try {
+  static Future<void> addAct(String act, int severity) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Get the user's display name and gameId
+      String displayName = await getUserDisplayName(user.uid);
+      String? gameId = await getUserGameId();
+
       await _firestore.collection('acts').add({
-        'act': actText,
+        'act': act,
         'severity': severity,
-        'userId': FirebaseAuth.instance.currentUser?.uid,
+        'displayName': displayName,
+        'gameId': gameId,
       });
-    } catch (e) {
-      print('Error adding act: $e');
-      rethrow; // Rethrow the exception to handle it elsewhere if needed
     }
+  }
+
+  static Future<String> getUserDisplayName(String userId) async {
+    DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
+    return userDoc.exists ? userDoc['displayName'] ?? 'Anonymous' : 'Anonymous';
   }
 
   static Future<void> updateUserJarData(int counter, int moneyInCents) async {
