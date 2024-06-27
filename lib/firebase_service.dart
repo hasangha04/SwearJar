@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,7 +8,6 @@ class FirebaseService {
   static Future<void> addDare(String dare, int severity) async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // Get the user's display name and gameId
       String displayName = await getUserDisplayName(user.uid);
       String? gameId = await getUserGameId();
 
@@ -25,7 +23,6 @@ class FirebaseService {
   static Future<void> addAct(String act, int severity) async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // Get the user's display name and gameId
       String displayName = await getUserDisplayName(user.uid);
       String? gameId = await getUserGameId();
 
@@ -142,10 +139,9 @@ class FirebaseService {
 
       await _firestore.collection('games').doc(gameId).set({
         'users': [user.uid],
-        'gameId': gameId, // Add gameId field to the game document
+        'gameId': gameId,
       });
 
-      // Store the game ID in the user's document
       await _firestore.collection('users').doc(user.uid).set({
         'gameId': gameId,
       }, SetOptions(merge: true));

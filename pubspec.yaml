@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   yaml:
   provider:
+  flutter_dotenv:
   firebase_core: 2.31.1
   mockito:
   firebase_auth: 4.19.6
@@ -46,6 +47,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  firebase_core:
+  cloud_firestore:
+  mockito:
+  test: any
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -72,6 +78,7 @@ flutter:
     - jar_2.png
     - jar_3.png
     - jar_4.png
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
